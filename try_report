@@ -1,0 +1,50 @@
+<?php
+
+$inciID=$_POST['id'];
+$reportType=$_POST['type'];
+$reportTypeDesc=$_POST['description'];
+
+$username = "neharika";                  // Use your username
+$password = "madhav123";             // and your password
+$database = "oracle.cise.ufl.edu:1521/orcl";   // and the connect string to connect to your database
+ 
+$c = oci_connect($username, $password, $database);
+
+
+if (!$c) 
+{
+    $m = oci_error();
+    trigger_error('Could not connect to database: '. $m['message'], E_USER_ERROR);
+}
+
+if(isset($_POST['Submit']))
+{
+
+$query='Select Resolution as RES from Incident_report where Incident_ID = :inciID AND REPORTTYPE_CODE = :reportType AND DESCRIPTION = :reportTypeDesc';
+$insert = oci_parse($c,$query);
+
+
+
+
+
+oci_bind_by_name($insert, ':inciID', $id);
+oci_bind_by_name($insert, ':reportType', $type);
+oci_bind_by_name($insert, ':reportTypeDesc', $description);
+
+$r = oci_execute($insert);
+oci_fetch_all($insert, $res);
+
+//while (($row = oci_fetch_array($insert, OCI_ASSOC)) != false) {
+  //  echo $row['INCIID'] . "<br>\n";
+    //echo $row['REPORTTYPE']->read(11) . "<br>\n"; // this will output first 11 bytes from DESCRIPTION
+    //echo $row['REPORTTYPEDESC']->read(11) . "<br>\n";-------->
+
+echo $res['RES'][0];
+header('Location: SFReport.php');  
+//}
+oci_free_statement($insert);
+oci_close($c);
+
+}
+
+?>
